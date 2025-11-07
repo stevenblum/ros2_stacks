@@ -69,7 +69,7 @@ class TilePublisher(Node):
         self.mcmot_calibration_status = True
         self.mcmot_calibration_time = time()
 
-        self.robot_axis_c0 = None
+        self.robot_axis_c= [None for _ in range(len(self.mcmot.cameras))] # Each camera has its own camera coordinates for robot axis
 
         # Moveit Commander Group Settings
         roscpp_initialize([])
@@ -120,9 +120,8 @@ class TilePublisher(Node):
             self.mcmot.capture_cameras_images() # Always run tile detection with fixed cameras
             self.mcmot.update_cameras_tracks() # Running this as frequently as possible is important
 
-        if (self.mcmot_calibration_status==True) and (self.w2r_calibration_status==True):
+        if self.mcmot_calibration_status and self.w2r_calibration_status:
             frame = self.mcmot.get_camera_
-
             af = self.draw_robot_axis(af)
             cv2.imshow("Camera 0", frame)
             cv2.waitKey(1)   # keep non-blocking, WHY????

@@ -1,6 +1,6 @@
 from setuptools import setup
 
-package_name = 'tile_pick_stack'
+package_name = 'ros2_stacks'
 
 setup(
     name=package_name,
@@ -8,17 +8,17 @@ setup(
     packages=[package_name],
     data_files=[
         ('share/ament_index/resource_index/packages', ['resource/' + package_name]),
-        ('share/' + package_name + '/launch', ['launch/tile_pick_stack.launch.py']),
+        ('share/' + package_name + '/launch', ['launch/ros_stacks.launch.py']),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='steve',
-    maintainer_email='steve@example.com',
-    description='Vision + MoveIt integration for NED-2 pick and stack demo',
-    license='MIT',
+    maintainer='user',
+    maintainer_email='steven.blum@uri.edu',
+    description='Stack Tiles',
+    license='Apache License 2.0',
     entry_points={
         'console_scripts': [
-            'vision_pick_stack = tile_pick_stack.src.vision_pick_stack:main',
+            'ros_stacks = ros2_stacks.src.ros_stacks:main',
         ],
     },
 )

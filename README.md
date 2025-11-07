@@ -1,6 +1,4 @@
-# stackws
-
-This repository was created from the existing VS Code workspace at /home/scblum/Projects/cleanup_pkg and will be published on GitHub as `stackws`.
+# ros_stack
 
 Contents:
 - `cleanup_pkg/` — Python package source
