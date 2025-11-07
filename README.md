@@ -18,6 +18,29 @@ Node Name
 
 ## TODO Function Improvements
 Use CV to identify which tile to stack on
+... lots more
+
+# File Structure
+
+Note, this repo is a ROS2 package that sits under a workspace and src folder
+
+workspace_folder/
+├── src/
+│   └── ros2_stacks/ ***THIS REPO***
+│       ├── launch/
+│       │   └── ros2_stacks.launch.py
+│       ├── resource/
+│       │   └── ros2_stacks
+│       ├── ros2_stacks/
+│       │   ├── __init__.py
+│       │   └── src/
+│       │       └── ros2_stacks.py  # Contains your main() function
+│       ├── package.xml
+│       ├── setup.cfg
+│       └── setup.py
+├── build/
+├── install/
+└── log/
 
 
 Contents:
