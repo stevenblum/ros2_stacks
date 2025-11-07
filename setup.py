@@ -22,7 +22,7 @@ setup(
     license='Apache License 2.0',
     entry_points={
         'console_scripts': [
-            'ros2_stacks = ros2_stacks.src.ros2_stacks:main',
+            'ros2_stacks = ros2_stacks.ros2_stacks:main',
         ],
     },
 )
