@@ -6,21 +6,11 @@ from ament_index_python.packages import get_package_share_directory
 import os
 
 def generate_launch_description():
-    # Optional: include MoveIt2 bringup if not already running
-    # moveit_launch = IncludeLaunchDescription(
-    #     PythonLaunchDescriptionSource([
-    #         os.path.join(
-    #             get_package_share_directory('moveit2_bringup'),
-    #             'launch',
-    #             'move_group.launch.py'
-    #         )
-    #     ])
-    # )
 
-    vision_pick_stack_node = Node(
-        package='tile_pick_stack',
-        executable='vision_pick_stack',   # 👈 entry point name from setup.py
-        name='vision_pick_stack',
+    ros2_stacks_node = Node(
+        package='ros2_stacks',
+        executable='ros2_stacks',   # 👈 entry point name from setup.py
+        name='ros2_stacks_node',
         output='screen',
         emulate_tty=True,  # keeps live terminal color logs
         parameters=[{
@@ -30,5 +20,5 @@ def generate_launch_description():
 
     return LaunchDescription([
         # moveit_launch,  # uncomment if you want MoveIt to launch automatically
-        vision_pick_stack_node
+        ros2_stacks_node
     ])
