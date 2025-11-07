@@ -1,5 +1,25 @@
 # ros_stack
 
+## TODO for Coding
+arm_camera calibration, and loading mtx and dist
+URDF for gripper, open/close commands
+Calibrate using all 4 corners of aruco marker
+For gripper open/close, done use gripper_joint_goal[0], use named joints
+Does group commander .go() return a tuple or a trajectory? Depends on ROS/MoveIt version
+
+## TODO Setup/Config
+Check that the camera is mounted at the origin of the camera frame
+Check the name of the camera frame
+Actually calibrate the camera
+
+## TODO for Ros2 Package
+How to include python requirments.txt
+Node Name
+
+## TODO Function Improvements
+Use CV to identify which tile to stack on
+
+
 Contents:
 - `cleanup_pkg/` — Python package source
 - `launch/` — ROS-launch related scripts

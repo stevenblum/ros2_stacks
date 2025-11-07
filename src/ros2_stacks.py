@@ -19,28 +19,7 @@ from rclpy.executors import MultiThreadedExecutor
 from rclpy.callback_groups import ReentrantCallbackGroup
 import threading
 
-
-# TODO for Coding
-# arm_camera calibration, and loading mtx and dist
-# URDF for gripper, open/close commands
-# Calibrate using all 4 corners of aruco marker
-# For gripper open/close, done use gripper_joint_goal[0], use named joints
-# Does group commander .go() return a tuple or a trajectory? Depends on ROS/MoveIt version
-
-# TODO Setup/Config
-# Check that the camera is mounted at the origin of the camera frame
-# Check the name of the camera frame
-# Actually calibrate the camera
-
-# TODO for Ros2 Package
-# How to include python requirments.txt
-# Node Name
-
-# TODO Function Improvements
-# Use CV to identify which tile to stack on
-
-
-ARM_CAMERA_IMAGE_TOPIC = '/camera/color/image_raw'
+ARM_CAMERA_IMAGE_TOPIC = '/niryo_robot_vision/compressed_video_stream'
 STACK_POSE_0 = np.array([0.3,0.0,.005])
 GRIP_WIDTH_ON_TILE = .039
 APPROACH_HEIGHT = 0.1
