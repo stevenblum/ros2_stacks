@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from MCMOTracker import *
+from mcmot import MCMOTracker, MCMOTUtils
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Image
