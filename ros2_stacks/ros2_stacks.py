@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
-from mcmot import MCMOTracker, MCMOTUtils
+from mcmot import MCMOTracker
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 import cv2
-from moveit_commander import MoveGroupCommander, roscpp_initialize
 from geometry_msgs.msg import Pose
 import tf2_ros
 import random
@@ -18,8 +17,11 @@ from tf2_ros import Buffer, TransformListener
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.callback_groups import ReentrantCallbackGroup
 import threading
+from functools import partial
 
 ARM_CAMERA_IMAGE_TOPIC = '/niryo_robot_vision/compressed_video_stream'
+FIXED_CAMERA_LEFT_IMAGE_TOPIC = '/cam_left/my_fixed_camera/image_raw'
+FIXED_CAMERA_RIGHT_IMAGE_TOPIC = '/cam_right/my_fixed_camera/image_raw'
 STACK_POSE_0 = np.array([0.3,0.0,.005])
 GRIP_WIDTH_ON_TILE = .039
 APPROACH_HEIGHT = 0.1
@@ -44,7 +46,7 @@ class TilePublisher(Node):
         self.arm_camera_dist = None #
 
         self.mcmot_calibration_status = False
-        self.mcmot = MCMOTracker("LATEST",[0,1],["lab_logitech1","lab_logitech2"], "4square")
+        self.mcmot = MCMOTracker("LATEST",[0,1],["lab_logitech1","lab_logitech2"], "4square", display=True)
         self.mcmot_calibration_status = True
         self.mcmot_calibration_time = time()
 
@@ -85,27 +87,25 @@ class TilePublisher(Node):
         )
         self.subscription  # prevent unused variable warning
 
-        self.timer_handle = self.create_timer(0.5, self.timer_callback, callback_group=self.cb_timer)
+        self.sub_left_camera = self.create_subscription(
+            Image,
+            FIXED_CAMERA_LEFT_IMAGE_TOPIC,
+            partial(self.fixed_camera_callback, camera_number=0),
+            3
+        )
 
-    def image_callback(self,msg):
-        frame = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
-        with self.frame_lock: # required for MultiThreading
-            self.frame = frame
+        self.sub_right_camera = self.create_subscription(
+            Image,
+            FIXED_CAMERA_RIGHT_IMAGE_TOPIC,
+            partial(self.fixed_camera_callback, camera_number=1),
+            3
+        )
 
-        # Need to run YOLO on fixed cameras frequently to track tiles
-        # Running .capture_images() and .update_camera_tracks() in this call back synches it with the arm camera frame captures
-        if self.mcmot_calibration_status == True:  # Just in case the callback runs before calibration
-            self.get_logger().info("Running MCMOT Image Capture and Track Update")
-            self.mcmot.capture_cameras_images() # Always run tile detection with fixed cameras
-            self.mcmot.update_cameras_tracks() # Running this as frequently as possible is important
+        self.detect_timer_handle= self.create_timer(0.1, self.detect_callback, callback_group=self.cb_timer)
 
-        if self.mcmot_calibration_status and self.w2r_calibration_status:
-            frame = self.mcmot.get_camera_
-            af = self.draw_robot_axis(af)
-            cv2.imshow("Camera 0", frame)
-            cv2.waitKey(1)   # keep non-blocking, WHY????
+        self.stack_timer_handle = self.create_timer(0.5, self.stack_callback, callback_group=self.cb_timer)
 
-    def timer_callback(self):
+    def stack_callback(self):
         if not self.w2r_calibration_status:
             success = self.calibrate_w2r()
             if success:
@@ -157,6 +157,23 @@ class TilePublisher(Node):
         self.pick_and_stack(closest_tile_pose)
 
         self.set_status("Standby")
+
+    def detect_callback(self):
+        if not self.w2r_calibration_status:
+            return None
+        
+        if not self.mcmot_calibration_status:
+            return None
+
+        self.mcmot.update_cameras_tracks() # frames in cameras updated in image_callbacks
+        self.mcmot.match_global_tracks()
+        self.mcmot.update_displays()
+
+    def fixed_camera_callback(self, msg, camera_number):
+        frame = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
+
+        with self.frame_lock: # required for MultiThreading
+            self.mcmot.cameras[camera_number].frame = frame
 
     def pick_and_stack(self, tile_pose):
         self.get_logger().info(f"Received tile pose: {tile_pose}")
